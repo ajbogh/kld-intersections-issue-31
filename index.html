@@ -1,0 +1,22 @@
+<html>
+  <head>
+  </head>
+  <body>
+      <svg width="500">
+        <defs>
+          <symbol viewBox="0 0 88 72" id="poly">
+              <path d="M 0 36 18 0 70 0 88 36 70 72 18 72Z"></path>
+          </symbol>
+          <symbol id="poly2">
+              <path d="M 0 36 18 0 70 0 88 36 70 72 18 72Z" fill="#ccc"></path>
+          </symbol>
+        </defs>
+        <g>
+          <use href="#poly" />
+          <use href="#poly2" />
+          <line x1="0" x2="250" y1="0" y2="75" stroke="blue" stroke-width="2" id="line" />
+        </g>
+      </svg>
+  </body>
+  <script src="/dist/script.js"></script>
+</html>
