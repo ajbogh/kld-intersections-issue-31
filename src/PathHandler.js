@@ -6,8 +6,8 @@
 
 
 
-if (typeof module !== "undefine") {
-  var Shapes = require('kld-intersections').Shapes;
+if (typeof module !== "undefined") {
+  var { Point2D, Matrix2D, AffineShapes } = require('kld-intersections');
 }
 
 /**
@@ -15,7 +15,8 @@ if (typeof module !== "undefine") {
 *
 *  @constructor
 */
-function PathHandler() {
+function PathHandler(matrix) {
+  this.matrix = matrix || new Matrix2D();
   this.shapes = [];
   this.firstX = null;
   this.firstY = null;
@@ -94,11 +95,11 @@ PathHandler.prototype.arcRel = function(rx, ry, xAxisRotation, largeArcFlag, swe
 *  @param {Number} y
 */
 PathHandler.prototype.curvetoCubicAbs = function(x1, y1, x2, y2, x, y) {
-  this.addShape(Shapes.cubicBezier(
-      this.lastX, this.lastY,
-      x1, y1,
-      x2, y2,
-      x, y
+  this.addShape(AffineShapes.cubicBezier(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(x1, y1)).transform(this.matrix),
+      (new Point2D(x2, y2)).transform(this.matrix),
+      (new Point2D(x, y)).transform(this.matrix)
   ));
 
   this.lastX = x;
@@ -117,11 +118,11 @@ PathHandler.prototype.curvetoCubicAbs = function(x1, y1, x2, y2, x, y) {
 *  @param {Number} y
 */
 PathHandler.prototype.curvetoCubicRel = function(x1, y1, x2, y2, x, y) {
-  this.addShape(Shapes.cubicBezier(
-      this.lastX, this.lastY,
-      this.lastX + x1, this.lastY + y1,
-      this.lastX + x2, this.lastY + y2,
-      this.lastX + x, this.lastY + y
+  this.addShape(AffineShapes.cubicBezier(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.lastX + x1, this.lastY + y1)).transform(this.matrix),
+      (new Point2D(this.lastX + x2, this.lastY + y2)).transform(this.matrix),
+      (new Point2D(this.lastX + x, this.lastY + y)).transform(this.matrix)
   ));
 
   this.lastX += x;
@@ -135,9 +136,9 @@ PathHandler.prototype.curvetoCubicRel = function(x1, y1, x2, y2, x, y) {
 *  @param {Number} x
 */
 PathHandler.prototype.linetoHorizontalAbs = function(x) {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      x, this.lastY
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(x, this.lastY)).transform(this.matrix)
   ));
 
   this.lastX = x;
@@ -150,9 +151,9 @@ PathHandler.prototype.linetoHorizontalAbs = function(x) {
 *  @param {Number} x
 */
 PathHandler.prototype.linetoHorizontalRel = function(x) {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      this.lastX + x, this.lastY
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.lastX + x, this.lastY)).transform(this.matrix)
   ));
 
   this.lastX += x;
@@ -166,9 +167,9 @@ PathHandler.prototype.linetoHorizontalRel = function(x) {
 *  @param {Number} y
 */
 PathHandler.prototype.linetoAbs = function(x, y) {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      x, y
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(x, y)).transform(this.matrix)
   ));
 
   this.lastX = x;
@@ -183,9 +184,9 @@ PathHandler.prototype.linetoAbs = function(x, y) {
 *  @param {Number} y
 */
 PathHandler.prototype.linetoRel = function(x, y) {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      this.lastX + x, this.lastY + y
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.lastX + x, this.lastY + y)).transform(this.matrix)
   ));
 
   this.lastX += x;
@@ -230,10 +231,10 @@ PathHandler.prototype.movetoRel = function(x, y) {
 *  @param {Number} y
 */
 PathHandler.prototype.curvetoQuadraticAbs = function(x1, y1, x, y) {
-  this.addShape(Shapes.quadraticBezier(
-      this.lastX, this.lastY,
-      x1, y1,
-      x, y
+  this.addShape(AffineShapes.quadraticBezier(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(x1, y1)).transform(this.matrix),
+      (new Point2D(x, y)).transform(this.matrix)
   ));
 
   this.lastX = x;
@@ -250,10 +251,10 @@ PathHandler.prototype.curvetoQuadraticAbs = function(x1, y1, x, y) {
 *  @param {Number} y
 */
 PathHandler.prototype.curvetoQuadraticRel = function(x1, y1, x, y) {
-  this.addShape(Shapes.quadraticBezier(
-      this.lastX, this.lastY,
-      this.lastX + x1, this.lastY + y1,
-      this.lastX + x, this.lastY + y
+  this.addShape(AffineShapes.quadraticBezier(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.lastX + x1, this.lastY + y1)).transform(this.matrix),
+      (new Point2D(this.lastX + x, this.lastY + y)).transform(this.matrix)
   ));
 
   this.lastX += x;
@@ -283,10 +284,10 @@ PathHandler.prototype.curvetoCubicSmoothAbs = function(x2, y2, x, y) {
       controlY = this.lastY;
   }
 
-  this.addShape(Shapes.cubicBezier(
-      controlX, controlY,
-      x2, y2,
-      x, y
+  this.addShape(AffineShapes.cubicBezier(
+      (new Point2D(controlX, controlY)).transform(this.matrix),
+      (new Point2D(x2, y2)).transform(this.matrix),
+      (new Point2D(x, y)).transform(this.matrix)
   ));
 
   this.lastX = x;
@@ -316,10 +317,10 @@ PathHandler.prototype.curvetoCubicSmoothRel = function(x2, y2, x, y) {
       controlY = this.lastY;
   }
 
-  this.addShape(Shapes.cubicBezier(
-      controlX, controlY,
-      this.lastX + x2, this.lastY + y2,
-      this.lastX + x, this.lastY + y
+  this.addShape(AffineShapes.cubicBezier(
+      (new Point2D(controlX, controlY)).transform(this.matrix),
+      (new Point2D(this.lastX + x2, this.lastY + y2)).transform(this.matrix),
+      (new Point2D(this.lastX + x, this.lastY + y)).transform(this.matrix)
   ));
 
   this.lastX += x;
@@ -347,9 +348,9 @@ PathHandler.prototype.curvetoQuadraticSmoothAbs = function(x, y) {
       controlY = this.lastY;
   }
 
-  this.addShape(Shapes.quadraticBezier(
-      controlX, controlY,
-      x, y
+  this.addShape(AffineShapes.quadraticBezier(
+      (new Point2D(controlX, controlY)).transform(this.matrix),
+      (new Point2D(x, y)).transform(this.matrix)
   ));
 
   this.lastX = x;
@@ -377,9 +378,9 @@ PathHandler.prototype.curvetoQuadraticSmoothRel = function(x, y) {
       controlY = this.lastY;
   }
 
-  this.addShape(Shapes.quadraticBezier(
-      controlX, controlY,
-      this.lastX + x, this,lastY + y
+  this.addShape(AffineShapes.quadraticBezier(
+      (new Point2D(controlX, controlY)).transform(this.matrix),
+      (new Point2D(this.lastX + x, this,lastY + y)).transform(this.matrix)
   ));
 
   this.lastX += x;
@@ -393,9 +394,9 @@ PathHandler.prototype.curvetoQuadraticSmoothRel = function(x, y) {
 *  @param {Number} y
 */
 PathHandler.prototype.linetoVerticalAbs = function(y) {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      this.lastX, y
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.lastX, y)).transform(this.matrix)
   ));
 
   this.lastY = y;
@@ -409,9 +410,9 @@ PathHandler.prototype.linetoVerticalAbs = function(y) {
 *  @param {Number} y
 */
 PathHandler.prototype.linetoVerticalRel = function(y) {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      this.lastX, this.lastY + y
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.lastX, this.lastY + y)).transform(this.matrix)
   ));
 
   this.lastY += y;
@@ -423,9 +424,9 @@ PathHandler.prototype.linetoVerticalRel = function(y) {
 *  closePath - z or Z
 */
 PathHandler.prototype.closePath = function() {
-  this.addShape(Shapes.line(
-      this.lastX, this.lastY,
-      this.firstX, this.firstY
+  this.addShape(AffineShapes.line(
+      (new Point2D(this.lastX, this.lastY)).transform(this.matrix),
+      (new Point2D(this.firstX, this.firstY)).transform(this.matrix)
   ));
 
   this.lastX = this.firstX,
@@ -433,6 +434,6 @@ PathHandler.prototype.closePath = function() {
   this.lastCommand = "z";
 };
 
-if (typeof module !== "undefine") {
+if (typeof module !== "undefined") {
   module.exports = PathHandler;
 }
